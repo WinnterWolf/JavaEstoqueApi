@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,8 +21,8 @@ public class StockTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private Product product;
+    @Column(nullable = false, name = "product_id")
+    private int product;
 
     @Column(nullable = false)
     private TransactionType transactionType;

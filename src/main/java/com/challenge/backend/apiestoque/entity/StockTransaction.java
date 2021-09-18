@@ -25,6 +25,7 @@ public class StockTransaction {
     private int product;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
     @Column(nullable = false)

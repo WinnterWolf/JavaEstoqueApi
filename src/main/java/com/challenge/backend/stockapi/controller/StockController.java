@@ -5,6 +5,7 @@ import com.challenge.backend.stockapi.dto.request.ProductDTO;
 import com.challenge.backend.stockapi.entity.StockTransaction;
 import com.challenge.backend.stockapi.exceptions.ProductNotFoundException;
 import com.challenge.backend.stockapi.service.StockService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/stock")
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class StockController {
 
     private StockService stockService;
-
-    @Autowired
-    public StockController(StockService stockService) {
-        this.stockService = stockService;
-    }
 
     @RequestMapping(path="/product", method = RequestMethod.POST)
     public MessageResponseDTO createProduct(@RequestBody @Valid ProductDTO productDTO){

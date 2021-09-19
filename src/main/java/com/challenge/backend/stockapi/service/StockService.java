@@ -9,6 +9,7 @@ import com.challenge.backend.stockapi.exceptions.ProductNotFoundException;
 import com.challenge.backend.stockapi.mapper.ProductMapper;
 import com.challenge.backend.stockapi.repository.ProductRepository;
 import com.challenge.backend.stockapi.repository.StockTransactionRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,22 +21,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class StockService {
 
     private ProductRepository productRepository;
     private StockTransactionRepository stockTransactionRepository;
 
     private final ProductMapper productMapper = ProductMapper.INSTANCE;
-
-    @Autowired
-    public void ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
-
-    @Autowired
-    public StockService(StockTransactionRepository stockTransactionRepository) {
-        this.stockTransactionRepository = stockTransactionRepository;
-    }
 
     @RequestMapping(path = "/product", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
@@ -63,7 +55,7 @@ public class StockService {
     }
 
     public List<ProductDTO> listAll() {
-        List<Product> allProducts =  productRepository.findAll();
+        List<Product> allProducts = productRepository.findAll();
         return allProducts.stream()
                 .map(productMapper::toDTO)
                 .collect(Collectors.toList());

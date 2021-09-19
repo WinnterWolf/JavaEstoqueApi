@@ -8,6 +8,7 @@ import com.challenge.backend.stockapi.entity.StockTransaction;
 import com.challenge.backend.stockapi.enums.TransactionType;
 import com.challenge.backend.stockapi.exceptions.NotEnoughInventoryException;
 import com.challenge.backend.stockapi.exceptions.ProductNotFoundException;
+import com.challenge.backend.stockapi.exceptions.TransactionNotFoundException;
 import com.challenge.backend.stockapi.mapper.ProductMapper;
 import com.challenge.backend.stockapi.mapper.StockTransactionMapper;
 import com.challenge.backend.stockapi.repository.ProductRepository;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -93,6 +93,11 @@ public class StockService {
         return productMapper.toDTO(product);
     }
 
+    public StockTransactionDTO findTransactionById(long id) throws TransactionNotFoundException {
+        StockTransaction stockTransaction = verifyIfTransactionExists(id);
+        return stockTransactionMapper.toDTO(stockTransaction);
+    }
+
     public void deleteProductById(Long id) throws ProductNotFoundException {
         Product product = verifyIfProductExistsById(id);
 
@@ -119,7 +124,12 @@ public class StockService {
 
     private Product verifyIfProductExistsById(long id) throws ProductNotFoundException {
         return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with code ",id));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID ",id));
+    }
+
+    private StockTransaction verifyIfTransactionExists(long id) throws TransactionNotFoundException {
+        return stockTransactionRepository.findById(id)
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with ID ",id));
     }
 
 

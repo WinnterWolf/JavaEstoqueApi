@@ -5,6 +5,7 @@ import com.challenge.backend.stockapi.dto.response.MessageResponseDTO;
 import com.challenge.backend.stockapi.dto.request.ProductDTO;
 import com.challenge.backend.stockapi.exceptions.NotEnoughInventoryException;
 import com.challenge.backend.stockapi.exceptions.ProductNotFoundException;
+import com.challenge.backend.stockapi.exceptions.TransactionNotFoundException;
 import com.challenge.backend.stockapi.service.StockService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,11 @@ public class StockController {
     @RequestMapping(path="/transaction", method = RequestMethod.GET)
     public List<StockTransactionDTO> listAllTransactions(){
         return stockService.listAllTransactions();
+    }
+
+    @RequestMapping(path="/transaction/{id}", method = RequestMethod.GET)
+    public StockTransactionDTO findTransactionById(@PathVariable long id) throws TransactionNotFoundException {
+        return stockService.findTransactionById(id);
     }
 
     @RequestMapping(path="/product/{id}", method = RequestMethod.GET)

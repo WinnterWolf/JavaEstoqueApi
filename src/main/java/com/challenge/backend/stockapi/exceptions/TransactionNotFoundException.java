@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class ProductNotFoundException extends Exception {
+public class TransactionNotFoundException extends Exception {
 
-    public ProductNotFoundException(String s, Long id){
+    public TransactionNotFoundException(String s, long id) {
         super(s + id);
     }
 }

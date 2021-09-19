@@ -12,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -32,7 +33,7 @@ public class StockTransactionDTO {
     @NotBlank
     private BigDecimal value;
 
-    private LocalDate transactionDate;
+    private LocalDateTime transactionDate;
 
     @NotEmpty
     private int amount;

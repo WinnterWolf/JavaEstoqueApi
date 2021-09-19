@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -31,7 +31,7 @@ public class StockTransaction {
     @Column(nullable = false)
     private BigDecimal value;
 
-    private LocalDate transactionDate;
+    private LocalDateTime transactionDate;
 
     @Column(nullable = false)
     private int amount;

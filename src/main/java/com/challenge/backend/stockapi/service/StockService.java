@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,6 +67,7 @@ public class StockService {
             }
         }
 
+        stockTransactionDTO.setTransactionDate(LocalDateTime.now());
         StockTransaction stockTransactionToSave = stockTransactionMapper.toModel(stockTransactionDTO);
         StockTransaction savedStockTransaction = stockTransactionRepository.save(stockTransactionToSave);
 

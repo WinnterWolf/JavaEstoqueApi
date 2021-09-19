@@ -1,4 +1,4 @@
-package com.challenge.backend.stockapi.dto;
+package com.challenge.backend.stockapi.dto.response;
 
 import lombok.Builder;
 import lombok.Data;

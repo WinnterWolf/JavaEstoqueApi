@@ -1,7 +1,7 @@
-package com.challenge.backend.apiestoque.mapper;
+package com.challenge.backend.stockapi.mapper;
 
-import com.challenge.backend.apiestoque.dto.request.ProductDTO;
-import com.challenge.backend.apiestoque.entity.Product;
+import com.challenge.backend.stockapi.dto.request.ProductDTO;
+import com.challenge.backend.stockapi.entity.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

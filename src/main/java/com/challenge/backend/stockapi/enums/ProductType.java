@@ -1,4 +1,4 @@
-package com.challenge.backend.apiestoque.enums;
+package com.challenge.backend.stockapi.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

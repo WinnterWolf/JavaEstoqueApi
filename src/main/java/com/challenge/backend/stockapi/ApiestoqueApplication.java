@@ -1,4 +1,4 @@
-package com.challenge.backend.apiestoque;
+package com.challenge.backend.stockapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

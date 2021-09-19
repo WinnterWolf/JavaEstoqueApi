@@ -1,6 +1,6 @@
-package com.challenge.backend.apiestoque.dto.request;
+package com.challenge.backend.stockapi.dto.request;
 
-import com.challenge.backend.apiestoque.enums.TransactionType;
+import com.challenge.backend.stockapi.enums.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

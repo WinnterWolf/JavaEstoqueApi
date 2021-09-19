@@ -1,14 +1,14 @@
-package com.challenge.backend.apiestoque.service;
+package com.challenge.backend.stockapi.service;
 
-import com.challenge.backend.apiestoque.dto.MessageResponseDTO;
-import com.challenge.backend.apiestoque.dto.request.ProductDTO;
-import com.challenge.backend.apiestoque.entity.Product;
-import com.challenge.backend.apiestoque.entity.StockTransaction;
-import com.challenge.backend.apiestoque.enums.TransactionType;
-import com.challenge.backend.apiestoque.exceptions.ProductNotFoundException;
-import com.challenge.backend.apiestoque.mapper.ProductMapper;
-import com.challenge.backend.apiestoque.repository.ProductRepository;
-import com.challenge.backend.apiestoque.repository.StockTransactionRepository;
+import com.challenge.backend.stockapi.dto.MessageResponseDTO;
+import com.challenge.backend.stockapi.dto.request.ProductDTO;
+import com.challenge.backend.stockapi.entity.Product;
+import com.challenge.backend.stockapi.entity.StockTransaction;
+import com.challenge.backend.stockapi.enums.TransactionType;
+import com.challenge.backend.stockapi.exceptions.ProductNotFoundException;
+import com.challenge.backend.stockapi.mapper.ProductMapper;
+import com.challenge.backend.stockapi.repository.ProductRepository;
+import com.challenge.backend.stockapi.repository.StockTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -45,10 +45,7 @@ public class StockService {
         Product productToSave = productMapper.toModel(productDTO);
         Product savedProduct = productRepository.save(productToSave);
 
-        return MessageResponseDTO
-                .builder()
-                .message("Created Product with ID " + savedProduct.getId())
-                .build();
+        return createMessageResponse(savedProduct.getId(), "Created Product with ID ");
     }
 
     //TODO
@@ -82,6 +79,23 @@ public class StockService {
 
 //        TODO verificar se existem transações com esse produto e exclui-las também.
         productRepository.deleteById(id);
+    }
+
+
+    public MessageResponseDTO updateProductById(Long id, ProductDTO productDTO) throws ProductNotFoundException {
+
+        verifyIfProductExists(id);
+        Product productToUpdate = productMapper.toModel(productDTO);
+        Product updatedProduct = productRepository.save(productToUpdate);
+
+        return createMessageResponse(updatedProduct.getId(), "Updated Product with ID ");
+    }
+
+    private MessageResponseDTO createMessageResponse(Long id, String s) {
+        return MessageResponseDTO
+                .builder()
+                .message(s + id)
+                .build();
     }
 
     private Product verifyIfProductExists(long id) throws ProductNotFoundException {

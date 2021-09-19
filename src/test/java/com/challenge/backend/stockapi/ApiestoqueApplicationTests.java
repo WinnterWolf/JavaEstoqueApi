@@ -1,4 +1,4 @@
-package com.challenge.backend.apiestoque;
+package com.challenge.backend.stockapi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

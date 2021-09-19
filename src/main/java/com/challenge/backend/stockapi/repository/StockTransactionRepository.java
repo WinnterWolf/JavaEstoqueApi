@@ -1,6 +1,6 @@
-package com.challenge.backend.apiestoque.repository;
+package com.challenge.backend.stockapi.repository;
 
-import com.challenge.backend.apiestoque.entity.StockTransaction;
+import com.challenge.backend.stockapi.entity.StockTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StockTransactionRepository extends JpaRepository<StockTransaction, Long> {

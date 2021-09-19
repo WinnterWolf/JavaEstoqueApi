@@ -1,38 +1,39 @@
-package com.challenge.backend.apiestoque.entity;
+package com.challenge.backend.stockapi.dto.request;
 
-import com.challenge.backend.apiestoque.enums.ProductType;
+import com.challenge.backend.stockapi.enums.ProductType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-@Entity
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class ProductDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false, unique = true)
+    @NotNull
     private int code;
 
-    @Column(nullable = false)
+    @NotEmpty
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @NotNull
     private ProductType type;
 
-    @Column(nullable = false)
+    @NotNull
     private BigDecimal vendorsPrice;
 
-    @Column(nullable = false)
+    @NotNull
     private int stockAmount;
 }

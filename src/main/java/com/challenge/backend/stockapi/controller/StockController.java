@@ -1,14 +1,10 @@
-package com.challenge.backend.apiestoque.controller;
+package com.challenge.backend.stockapi.controller;
 
-import com.challenge.backend.apiestoque.dto.MessageResponseDTO;
-import com.challenge.backend.apiestoque.dto.request.ProductDTO;
-import com.challenge.backend.apiestoque.entity.Product;
-import com.challenge.backend.apiestoque.entity.StockTransaction;
-import com.challenge.backend.apiestoque.enums.TransactionType;
-import com.challenge.backend.apiestoque.exceptions.ProductNotFoundException;
-import com.challenge.backend.apiestoque.repository.ProductRepository;
-import com.challenge.backend.apiestoque.repository.StockTransactionRepository;
-import com.challenge.backend.apiestoque.service.StockService;
+import com.challenge.backend.stockapi.dto.MessageResponseDTO;
+import com.challenge.backend.stockapi.dto.request.ProductDTO;
+import com.challenge.backend.stockapi.entity.StockTransaction;
+import com.challenge.backend.stockapi.exceptions.ProductNotFoundException;
+import com.challenge.backend.stockapi.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +48,11 @@ public class StockController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteById(@PathVariable Long id) throws ProductNotFoundException {
         stockService.delete(id);
+    }
+
+    @RequestMapping(path="/product/{id}", method = RequestMethod.PUT)
+    public MessageResponseDTO updateProductByID(@PathVariable Long id, @RequestBody @Valid ProductDTO productDTO) throws ProductNotFoundException {
+        return stockService.updateProductById(id, productDTO);
     }
 
 }

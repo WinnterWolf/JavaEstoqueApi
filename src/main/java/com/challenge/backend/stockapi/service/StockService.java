@@ -105,6 +105,12 @@ public class StockService {
         productRepository.deleteById(id);
     }
 
+    public void deleteTransactionById(Long id) throws TransactionNotFoundException {
+        StockTransaction stockTransaction = verifyIfTransactionExists(id);
+
+        stockTransactionRepository.deleteById(id);
+    }
+
 
     public MessageResponseDTO updateProductById(Long id, ProductDTO productDTO) throws ProductNotFoundException {
 
@@ -131,6 +137,4 @@ public class StockService {
         return stockTransactionRepository.findById(id)
                 .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with ID ",id));
     }
-
-
 }

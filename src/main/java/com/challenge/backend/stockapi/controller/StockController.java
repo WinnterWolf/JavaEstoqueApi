@@ -59,6 +59,12 @@ public class StockController {
         stockService.deleteProductById(id);
     }
 
+    @RequestMapping(path="/transaction/{id}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTransactionById(@PathVariable Long id) throws TransactionNotFoundException {
+        stockService.deleteTransactionById(id);
+    }
+
     @RequestMapping(path="/product/{id}", method = RequestMethod.PUT)
     public MessageResponseDTO updateProductByID(@PathVariable Long id, @RequestBody @Valid ProductDTO productDTO) throws ProductNotFoundException {
         return stockService.updateProductById(id, productDTO);

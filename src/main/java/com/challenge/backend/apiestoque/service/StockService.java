@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class StockService {
 
@@ -61,4 +64,10 @@ public class StockService {
                 .build();
     }
 
+    public List<ProductDTO> listAll() {
+        List<Product> allProducts =  productRepository.findAll();
+        return allProducts.stream()
+                .map(productMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }

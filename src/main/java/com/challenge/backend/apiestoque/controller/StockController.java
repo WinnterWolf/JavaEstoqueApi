@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/stock")
@@ -33,6 +34,11 @@ public class StockController {
     @RequestMapping(path="/transaction", method = RequestMethod.POST)
     public MessageResponseDTO createTransaction(@RequestBody StockTransaction stockTransaction){
         return stockService.createTransaction(stockTransaction);
+    }
+
+    @RequestMapping(path="/product", method = RequestMethod.GET)
+    public List<ProductDTO> listAll(){
+        return stockService.listAll();
     }
 
 }

@@ -1,6 +1,6 @@
 package com.challenge.backend.apiestoque.dto.request;
 
-import com.challenge.backend.apiestoque.enums.ProductType;
+import com.challenge.backend.apiestoque.enums.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,32 +10,30 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
-
+import java.time.LocalDate;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductDTO {
+public class StockTransactionDTO {
+
 
     private long id;
 
-    @NotNull
-    private int code;
-
     @NotEmpty
-    private String description;
+    private int product;
 
     @Enumerated(EnumType.STRING)
-    @NotNull
-    private ProductType type;
+    @NotEmpty
+    private TransactionType transactionType;
 
-    @NotNull
-    private BigDecimal vendorsPrice;
+    @NotBlank
+    private BigDecimal value;
 
-    @NotNull
-    private int stockAmount;
+    private LocalDate transactionDate;
+
+    @NotEmpty
+    private int amount;
 }

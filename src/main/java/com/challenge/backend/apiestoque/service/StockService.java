@@ -1,9 +1,11 @@
 package com.challenge.backend.apiestoque.service;
 
 import com.challenge.backend.apiestoque.dto.MessageResponseDTO;
+import com.challenge.backend.apiestoque.dto.request.ProductDTO;
 import com.challenge.backend.apiestoque.entity.Product;
 import com.challenge.backend.apiestoque.entity.StockTransaction;
 import com.challenge.backend.apiestoque.enums.TransactionType;
+import com.challenge.backend.apiestoque.mapper.ProductMapper;
 import com.challenge.backend.apiestoque.repository.ProductRepository;
 import com.challenge.backend.apiestoque.repository.StockTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ public class StockService {
     private ProductRepository productRepository;
     private StockTransactionRepository stockTransactionRepository;
 
+    private final ProductMapper productMapper = ProductMapper.INSTANCE;
+
     @Autowired
     public void ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
@@ -31,16 +35,19 @@ public class StockService {
 
     @RequestMapping(path = "/product", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public MessageResponseDTO createProduct(Product product) {
+    public MessageResponseDTO createProduct(ProductDTO productDTO) {
 
-        Product savedProduct = productRepository.save(product);
+
+        Product productToSave = productMapper.toModel(productDTO);
+        Product savedProduct = productRepository.save(productToSave);
+
         return MessageResponseDTO
                 .builder()
                 .message("Created Product with code: " + savedProduct.getCode())
                 .build();
     }
 
-    //Em desenvolvimento
+    //TODO
     @RequestMapping(path = "/transaction", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public MessageResponseDTO createTransaction(StockTransaction stockTransaction) {

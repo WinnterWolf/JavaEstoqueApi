@@ -33,18 +33,23 @@ public class StockController {
     }
 
     @RequestMapping(path="/product", method = RequestMethod.GET)
-    public List<ProductDTO> listAll(){
-        return stockService.listAll();
+    public List<ProductDTO> listAllProducts(){
+        return stockService.listAllProducts();
+    }
+
+    @RequestMapping(path="/transaction", method = RequestMethod.GET)
+    public List<StockTransactionDTO> listAllTransactions(){
+        return stockService.listAllTransactions();
     }
 
     @RequestMapping(path="/product/{id}", method = RequestMethod.GET)
-    public ProductDTO findById(@PathVariable long id) throws ProductNotFoundException {
+    public ProductDTO findProductById(@PathVariable long id) throws ProductNotFoundException {
         return stockService.findProductById(id);
     }
 
     @RequestMapping(path="/product/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteById(@PathVariable Long id) throws ProductNotFoundException {
+    public void deleteProductById(@PathVariable Long id) throws ProductNotFoundException {
         stockService.deleteProductById(id);
     }
 

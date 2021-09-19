@@ -67,17 +67,24 @@ public class StockService {
             }
         }
 
-        stockTransactionDTO.setTransactionDate(LocalDateTime.now());
+        stockTransactionDTO.setTransactionDate(LocalDateTime.now().withNano(0));
         StockTransaction stockTransactionToSave = stockTransactionMapper.toModel(stockTransactionDTO);
         StockTransaction savedStockTransaction = stockTransactionRepository.save(stockTransactionToSave);
 
         return createMessageResponse(savedStockTransaction.getId(), "Created Transaction with ID ");
     }
 
-    public List<ProductDTO> listAll() {
+    public List<ProductDTO> listAllProducts() {
         List<Product> allProducts = productRepository.findAll();
         return allProducts.stream()
                 .map(productMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<StockTransactionDTO> listAllTransactions() {
+        List<StockTransaction> allTransactions = stockTransactionRepository.findAll();
+        return allTransactions.stream()
+                .map(stockTransactionMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
@@ -114,4 +121,6 @@ public class StockService {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with code ",id));
     }
+
+
 }

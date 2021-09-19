@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class ProductNotFoundException extends Exception {
 
-    public ProductNotFoundException(Long id){
+    public ProductNotFoundException(String s, Long id){
         super("Person not found with ID "+ id);
     }
 }

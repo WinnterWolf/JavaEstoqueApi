@@ -1,12 +1,15 @@
 package com.challenge.backend.stockapi.service;
 
-import com.challenge.backend.stockapi.dto.MessageResponseDTO;
 import com.challenge.backend.stockapi.dto.request.ProductDTO;
+import com.challenge.backend.stockapi.dto.request.StockTransactionDTO;
+import com.challenge.backend.stockapi.dto.response.MessageResponseDTO;
 import com.challenge.backend.stockapi.entity.Product;
 import com.challenge.backend.stockapi.entity.StockTransaction;
 import com.challenge.backend.stockapi.enums.TransactionType;
+import com.challenge.backend.stockapi.exceptions.NotEnoughInventoryException;
 import com.challenge.backend.stockapi.exceptions.ProductNotFoundException;
 import com.challenge.backend.stockapi.mapper.ProductMapper;
+import com.challenge.backend.stockapi.mapper.StockTransactionMapper;
 import com.challenge.backend.stockapi.repository.ProductRepository;
 import com.challenge.backend.stockapi.repository.StockTransactionRepository;
 import lombok.AllArgsConstructor;
@@ -28,6 +31,7 @@ public class StockService {
     private StockTransactionRepository stockTransactionRepository;
 
     private final ProductMapper productMapper = ProductMapper.INSTANCE;
+    private final StockTransactionMapper stockTransactionMapper = StockTransactionMapper.INSTANCE;
 
     @RequestMapping(path = "/product", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
@@ -40,18 +44,31 @@ public class StockService {
         return createMessageResponse(savedProduct.getId(), "Created Product with ID ");
     }
 
-    //TODO
+
     @RequestMapping(path = "/transaction", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public MessageResponseDTO createTransaction(StockTransaction stockTransaction) {
+    public MessageResponseDTO createTransaction(StockTransactionDTO stockTransactionDTO) throws ProductNotFoundException, NotEnoughInventoryException {
 
+        Product product = productRepository.findProductByCode(stockTransactionDTO.getProduct())
+                .orElseThrow(() -> new ProductNotFoundException(" Product not found with code ", (long) stockTransactionDTO.getProduct()));
 
-        StockTransaction savedStockTransaction = stockTransactionRepository.save(stockTransaction);
-        TransactionType transactionType = stockTransaction.getTransactionType();
-        return MessageResponseDTO
-                .builder()
-                .message("Created " + transactionType + " Transaction with ID " + savedStockTransaction.getId())
-                .build();
+        TransactionType income = TransactionType.INCOME;
+        if(stockTransactionDTO.getTransactionType() == income){
+            product.setStockAmount(product.getStockAmount()+stockTransactionDTO.getAmount());
+            productRepository.save(product);
+        } else{
+            if(stockTransactionDTO.getAmount() <= product.getStockAmount()){
+                product.setStockAmount(product.getStockAmount()-stockTransactionDTO.getAmount());
+                productRepository.save(product);
+            } else{
+                throw new NotEnoughInventoryException(product.getId());
+            }
+        }
+
+        StockTransaction stockTransactionToSave = stockTransactionMapper.toModel(stockTransactionDTO);
+        StockTransaction savedStockTransaction = stockTransactionRepository.save(stockTransactionToSave);
+
+        return createMessageResponse(savedStockTransaction.getId(), "Created Transaction with ID ");
     }
 
     public List<ProductDTO> listAll() {
@@ -61,13 +78,13 @@ public class StockService {
                 .collect(Collectors.toList());
     }
 
-    public ProductDTO findById(long id) throws ProductNotFoundException {
-        Product product = verifyIfProductExists(id);
+    public ProductDTO findProductById(long id) throws ProductNotFoundException {
+        Product product = verifyIfProductExistsById(id);
         return productMapper.toDTO(product);
     }
 
-    public void delete(Long id) throws ProductNotFoundException {
-        Product product = verifyIfProductExists(id);
+    public void deleteProductById(Long id) throws ProductNotFoundException {
+        Product product = verifyIfProductExistsById(id);
 
 //        TODO verificar se existem transações com esse produto e exclui-las também.
         productRepository.deleteById(id);
@@ -76,7 +93,7 @@ public class StockService {
 
     public MessageResponseDTO updateProductById(Long id, ProductDTO productDTO) throws ProductNotFoundException {
 
-        verifyIfProductExists(id);
+        verifyIfProductExistsById(id);
         Product productToUpdate = productMapper.toModel(productDTO);
         Product updatedProduct = productRepository.save(productToUpdate);
 
@@ -90,8 +107,8 @@ public class StockService {
                 .build();
     }
 
-    private Product verifyIfProductExists(long id) throws ProductNotFoundException {
+    private Product verifyIfProductExistsById(long id) throws ProductNotFoundException {
         return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with code ",id));
     }
 }

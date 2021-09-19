@@ -10,6 +10,7 @@ import com.challenge.backend.apiestoque.repository.ProductRepository;
 import com.challenge.backend.apiestoque.repository.StockTransactionRepository;
 import com.challenge.backend.apiestoque.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -45,6 +46,12 @@ public class StockController {
     @RequestMapping(path="/product/{id}", method = RequestMethod.GET)
     public ProductDTO findById(@PathVariable long id) throws ProductNotFoundException {
         return stockService.findById(id);
+    }
+
+    @RequestMapping(path="/product/{id}", method = RequestMethod.DELETE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable Long id) throws ProductNotFoundException {
+        stockService.delete(id);
     }
 
 }

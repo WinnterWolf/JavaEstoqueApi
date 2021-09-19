@@ -73,8 +73,19 @@ public class StockService {
     }
 
     public ProductDTO findById(long id) throws ProductNotFoundException {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+        Product product = verifyIfProductExists(id);
         return productMapper.toDTO(product);
+    }
+
+    public void delete(Long id) throws ProductNotFoundException {
+        Product product = verifyIfProductExists(id);
+
+//        TODO verificar se existem transações com esse produto e exclui-las também.
+        productRepository.deleteById(id);
+    }
+
+    private Product verifyIfProductExists(long id) throws ProductNotFoundException {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
     }
 }

@@ -5,6 +5,7 @@ import com.challenge.backend.apiestoque.dto.request.ProductDTO;
 import com.challenge.backend.apiestoque.entity.Product;
 import com.challenge.backend.apiestoque.entity.StockTransaction;
 import com.challenge.backend.apiestoque.enums.TransactionType;
+import com.challenge.backend.apiestoque.exceptions.ProductNotFoundException;
 import com.challenge.backend.apiestoque.repository.ProductRepository;
 import com.challenge.backend.apiestoque.repository.StockTransactionRepository;
 import com.challenge.backend.apiestoque.service.StockService;
@@ -39,6 +40,11 @@ public class StockController {
     @RequestMapping(path="/product", method = RequestMethod.GET)
     public List<ProductDTO> listAll(){
         return stockService.listAll();
+    }
+
+    @RequestMapping(path="/product/{id}", method = RequestMethod.GET)
+    public ProductDTO findById(@PathVariable long id) throws ProductNotFoundException {
+        return stockService.findById(id);
     }
 
 }

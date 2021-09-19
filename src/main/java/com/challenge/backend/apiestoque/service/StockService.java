@@ -5,6 +5,7 @@ import com.challenge.backend.apiestoque.dto.request.ProductDTO;
 import com.challenge.backend.apiestoque.entity.Product;
 import com.challenge.backend.apiestoque.entity.StockTransaction;
 import com.challenge.backend.apiestoque.enums.TransactionType;
+import com.challenge.backend.apiestoque.exceptions.ProductNotFoundException;
 import com.challenge.backend.apiestoque.mapper.ProductMapper;
 import com.challenge.backend.apiestoque.repository.ProductRepository;
 import com.challenge.backend.apiestoque.repository.StockTransactionRepository;
@@ -46,7 +47,7 @@ public class StockService {
 
         return MessageResponseDTO
                 .builder()
-                .message("Created Product with code: " + savedProduct.getCode())
+                .message("Created Product with ID " + savedProduct.getId())
                 .build();
     }
 
@@ -60,7 +61,7 @@ public class StockService {
         TransactionType transactionType = stockTransaction.getTransactionType();
         return MessageResponseDTO
                 .builder()
-                .message("Created " + transactionType + " Transaction with ID: " + savedStockTransaction.getId())
+                .message("Created " + transactionType + " Transaction with ID " + savedStockTransaction.getId())
                 .build();
     }
 
@@ -69,5 +70,11 @@ public class StockService {
         return allProducts.stream()
                 .map(productMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public ProductDTO findById(long id) throws ProductNotFoundException {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+        return productMapper.toDTO(product);
     }
 }

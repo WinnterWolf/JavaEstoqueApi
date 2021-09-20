@@ -152,13 +152,22 @@ public class StockService {
 
     public MessageResponseDTO updateProductById(Long id, ProductDTO productDTO) throws ProductNotFoundException {
 
-        verifyIfProductExistsById(id);
+        Product oldProduct = verifyIfProductExistsById(id);
+        String message = "Updated Product with ID ";
+        if(oldProduct.getCode() != productDTO.getCode()){
+            List<StockTransaction> transactions = stockTransactionRepository.findTransactionsByProduct(oldProduct.getCode());
+            int transactionsUpdated = 0;
+            for (StockTransaction t: transactions) {
+                t.setProduct(productDTO.getCode());
+                stockTransactionRepository.save(t);
+                transactionsUpdated++;
+            }
+            message = "Updated " +transactionsUpdated+ " transactions and the Product with ID ";
+        }
         Product productToUpdate = productMapper.toModel(productDTO);
         Product updatedProduct = productRepository.save(productToUpdate);
 
-//      TODO alterar o product code nas transações
-
-        return createMessageResponse(updatedProduct.getId(), "Updated Product with ID ");
+        return createMessageResponse(updatedProduct.getId(), message);
     }
 
     public MessageResponseDTO updateTransactionById(Long id, StockTransactionDTO stockTransactionDTO) throws TransactionNotFoundException, ProductNotFoundException, NotEnoughInventoryException {

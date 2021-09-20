@@ -4,6 +4,7 @@ import com.challenge.backend.stockapi.dto.request.ProductDTO;
 import com.challenge.backend.stockapi.dto.request.StockTransactionDTO;
 import com.challenge.backend.stockapi.dto.response.MessageResponseDTO;
 import com.challenge.backend.stockapi.entity.Product;
+import com.challenge.backend.stockapi.entity.ProductProfit;
 import com.challenge.backend.stockapi.entity.ProductQuantity;
 import com.challenge.backend.stockapi.entity.StockTransaction;
 import com.challenge.backend.stockapi.enums.ProductType;
@@ -23,9 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,7 +81,7 @@ public class StockService {
            ProductQuantity productQuantity = new ProductQuantity();
            productQuantity.setProduct(p);
            int stockOutcome = 0;
-           List<StockTransaction> stockTransactions = stockTransactionRepository.findTransactionByProductOutcome(p.getCode());
+           List<StockTransaction> stockTransactions = stockTransactionRepository.findTransactionsByProductOutcome(p.getCode());
             for (StockTransaction transactions: stockTransactions) {
                 stockOutcome+=transactions.getAmount();
             }
@@ -103,6 +104,28 @@ public class StockService {
         return productMapper.toDTO(product);
     }
 
+    public ProductProfit listProductProfitById(long id) throws ProductNotFoundException {
+        Product product = verifyIfProductExistsById(id);
+        BigDecimal totalProfit = new BigDecimal(0);
+        int totalStockOutcome = 0;
+
+        List<StockTransaction> transactions = stockTransactionRepository.findTransactionsByProductOutcome(product.getCode());
+        for (StockTransaction t: transactions) {
+            BigDecimal transactionQuantity = BigDecimal.valueOf(t.getAmount());
+            t.getValue().divide(transactionQuantity);
+            BigDecimal transactionProfit = new BigDecimal(String.valueOf(t.getValue().divide(transactionQuantity)));
+            transactionProfit = transactionProfit.subtract(product.getVendorsPrice());
+            totalProfit = totalProfit.add(transactionProfit.multiply(transactionQuantity));
+            totalStockOutcome += t.getAmount();
+        }
+
+        return ProductProfit
+                .builder()
+                .totalProfit(totalProfit)
+                .totalStockOutcome(totalStockOutcome)
+                .build();
+    }
+
     public StockTransactionDTO findTransactionById(long id) throws TransactionNotFoundException {
         StockTransaction stockTransaction = verifyIfTransactionExists(id);
         return stockTransactionMapper.toDTO(stockTransaction);
@@ -111,7 +134,7 @@ public class StockService {
     public void deleteProductById(Long id) throws ProductNotFoundException {
         Product product = verifyIfProductExistsById(id);
 
-        List<StockTransaction> allTransactions = stockTransactionRepository.findTransactionByProduct(product.getCode());
+        List<StockTransaction> allTransactions = stockTransactionRepository.findTransactionsByProduct(product.getCode());
         if(!(allTransactions.isEmpty())){
             for (StockTransaction transaction : allTransactions) {
                 stockTransactionRepository.deleteById(transaction.getId());
@@ -132,6 +155,8 @@ public class StockService {
         verifyIfProductExistsById(id);
         Product productToUpdate = productMapper.toModel(productDTO);
         Product updatedProduct = productRepository.save(productToUpdate);
+
+//      TODO alterar o product code nas transações
 
         return createMessageResponse(updatedProduct.getId(), "Updated Product with ID ");
     }

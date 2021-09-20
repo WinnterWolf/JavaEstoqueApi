@@ -1,3 +1,10 @@
+server:
+  error:
+    include-binding-errors: always
+    include-exception: true
+    include-stacktrace: true
+    include-message: always
+
 spring:
   jpa:
     properties:

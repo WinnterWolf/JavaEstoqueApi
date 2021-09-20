@@ -53,19 +53,7 @@ public class StockService {
 
         Product product = productRepository.findProductByCode(stockTransactionDTO.getProduct())
                 .orElseThrow(() -> new ProductNotFoundException(" Product not found with code ", (long) stockTransactionDTO.getProduct()));
-
-        TransactionType income = TransactionType.INCOME;
-        if(stockTransactionDTO.getTransactionType() == income){
-            product.setStockAmount(product.getStockAmount()+stockTransactionDTO.getAmount());
-            productRepository.save(product);
-        } else{
-            if(stockTransactionDTO.getAmount() <= product.getStockAmount()){
-                product.setStockAmount(product.getStockAmount()-stockTransactionDTO.getAmount());
-                productRepository.save(product);
-            } else{
-                throw new NotEnoughInventoryException(product.getId());
-            }
-        }
+        validateTransaction(stockTransactionDTO, product);
 
         stockTransactionDTO.setTransactionDate(LocalDateTime.now().withNano(0));
         StockTransaction stockTransactionToSave = stockTransactionMapper.toModel(stockTransactionDTO);
@@ -121,6 +109,29 @@ public class StockService {
         return createMessageResponse(updatedProduct.getId(), "Updated Product with ID ");
     }
 
+    public MessageResponseDTO updateTransactionById(Long id, StockTransactionDTO stockTransactionDTO) throws TransactionNotFoundException, ProductNotFoundException, NotEnoughInventoryException {
+        verifyIfTransactionExists(id);
+        StockTransaction oldTransaction = stockTransactionRepository.getById(id);
+        Product newProduct = productRepository.findProductByCode(stockTransactionDTO.getProduct())
+                .orElseThrow(() -> new ProductNotFoundException(" Product not found with code ", (long) stockTransactionDTO.getProduct()));
+
+        if(oldTransaction.getTransactionType() == TransactionType.INCOME){
+            newProduct.setStockAmount(newProduct.getStockAmount() - oldTransaction.getAmount());
+        } else{
+            newProduct.setStockAmount(newProduct.getStockAmount() + oldTransaction.getAmount());
+        }
+        
+
+        stockTransactionDTO.setId(oldTransaction.getId());
+        validateTransaction(stockTransactionDTO, newProduct);
+
+        stockTransactionDTO.setTransactionDate(LocalDateTime.now().withNano(0));
+        StockTransaction stockTransactionToSave = stockTransactionMapper.toModel(stockTransactionDTO);
+        StockTransaction savedStockTransaction = stockTransactionRepository.save(stockTransactionToSave);
+
+        return createMessageResponse(savedStockTransaction.getId(), "Updated Transaction with ID ");
+    }
+
     private MessageResponseDTO createMessageResponse(Long id, String s) {
         return MessageResponseDTO
                 .builder()
@@ -136,5 +147,20 @@ public class StockService {
     private StockTransaction verifyIfTransactionExists(long id) throws TransactionNotFoundException {
         return stockTransactionRepository.findById(id)
                 .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with ID ",id));
+    }
+
+    private void validateTransaction(StockTransactionDTO stockTransactionDTO, Product product) throws NotEnoughInventoryException {
+        
+        if(stockTransactionDTO.getTransactionType() == TransactionType.INCOME){
+            product.setStockAmount(product.getStockAmount() + stockTransactionDTO.getAmount());
+            productRepository.save(product);
+        } else{
+            if(stockTransactionDTO.getAmount() <= product.getStockAmount()){
+                product.setStockAmount(product.getStockAmount() - stockTransactionDTO.getAmount());
+                productRepository.save(product);
+            } else{
+                throw new NotEnoughInventoryException(product.getId());
+            }
+        }
     }
 }

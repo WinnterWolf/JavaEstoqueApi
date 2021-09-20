@@ -29,7 +29,7 @@ public class StockController {
 
 
     @RequestMapping(path="/transaction", method = RequestMethod.POST)
-    public MessageResponseDTO createTransaction(@RequestBody StockTransactionDTO stockTransactionDTO) throws ProductNotFoundException, NotEnoughInventoryException {
+    public MessageResponseDTO createTransaction(@RequestBody @Valid StockTransactionDTO stockTransactionDTO) throws ProductNotFoundException, NotEnoughInventoryException {
         return stockService.createTransaction(stockTransactionDTO);
     }
 
@@ -66,8 +66,13 @@ public class StockController {
     }
 
     @RequestMapping(path="/product/{id}", method = RequestMethod.PUT)
-    public MessageResponseDTO updateProductByID(@PathVariable Long id, @RequestBody @Valid ProductDTO productDTO) throws ProductNotFoundException {
+    public MessageResponseDTO updateProductById(@PathVariable Long id, @RequestBody @Valid ProductDTO productDTO) throws ProductNotFoundException {
         return stockService.updateProductById(id, productDTO);
+    }
+
+    @RequestMapping(path="/transaction/{id}", method = RequestMethod.PUT)
+    public MessageResponseDTO updateTransactionById(@PathVariable Long id, @RequestBody @Valid StockTransactionDTO stockTransactionDTO) throws TransactionNotFoundException, ProductNotFoundException, NotEnoughInventoryException {
+        return stockService.updateTransactionById(id, stockTransactionDTO);
     }
 
 }

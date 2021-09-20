@@ -10,6 +10,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,18 +24,18 @@ public class StockTransactionDTO {
 
     private long id;
 
-    @NotEmpty
+    @NotNull
     private int product;
 
     @Enumerated(EnumType.STRING)
-    @NotEmpty
+    @NotNull
     private TransactionType transactionType;
 
-    @NotBlank
+    @NotNull
     private BigDecimal value;
 
     private LocalDateTime transactionDate;
 
-    @NotEmpty
+    @NotNull
     private int amount;
 }

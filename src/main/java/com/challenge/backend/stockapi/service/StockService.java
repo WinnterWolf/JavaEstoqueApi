@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,12 +90,17 @@ public class StockService {
     public void deleteProductById(Long id) throws ProductNotFoundException {
         Product product = verifyIfProductExistsById(id);
 
-//        TODO verificar se existem transações com esse produto e exclui-las também.
+        List<StockTransaction> allTransactions = stockTransactionRepository.findTransactionByProduct(product.getCode());
+        if(!(allTransactions.isEmpty())){
+            for (StockTransaction transaction : allTransactions) {
+                stockTransactionRepository.deleteById(transaction.getId());
+            }
+        }
         productRepository.deleteById(id);
     }
 
     public void deleteTransactionById(Long id) throws TransactionNotFoundException {
-        StockTransaction stockTransaction = verifyIfTransactionExists(id);
+        verifyIfTransactionExists(id);
 
         stockTransactionRepository.deleteById(id);
     }

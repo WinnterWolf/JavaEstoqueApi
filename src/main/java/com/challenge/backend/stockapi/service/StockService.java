@@ -4,7 +4,9 @@ import com.challenge.backend.stockapi.dto.request.ProductDTO;
 import com.challenge.backend.stockapi.dto.request.StockTransactionDTO;
 import com.challenge.backend.stockapi.dto.response.MessageResponseDTO;
 import com.challenge.backend.stockapi.entity.Product;
+import com.challenge.backend.stockapi.entity.ProductQuantity;
 import com.challenge.backend.stockapi.entity.StockTransaction;
+import com.challenge.backend.stockapi.enums.ProductType;
 import com.challenge.backend.stockapi.enums.TransactionType;
 import com.challenge.backend.stockapi.exceptions.NotEnoughInventoryException;
 import com.challenge.backend.stockapi.exceptions.ProductNotFoundException;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,6 +71,24 @@ public class StockService {
         return allProducts.stream()
                 .map(productMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<ProductQuantity> listAllProductsByType(ProductType type) {
+        List<Product> typedList = productRepository.listProductsByType(type);
+        List<ProductQuantity> productQuantityList = new ArrayList<>();
+        for (Product p: typedList) {
+           ProductQuantity productQuantity = new ProductQuantity();
+           productQuantity.setProduct(p);
+           int stockOutcome = 0;
+           List<StockTransaction> stockTransactions = stockTransactionRepository.findTransactionByProductOutcome(p.getCode());
+            for (StockTransaction transactions: stockTransactions) {
+                stockOutcome+=transactions.getAmount();
+            }
+           productQuantity.setStockOutcome(stockOutcome);
+            productQuantityList.add(productQuantity);
+        }
+
+        return productQuantityList;
     }
 
     public List<StockTransactionDTO> listAllTransactions() {

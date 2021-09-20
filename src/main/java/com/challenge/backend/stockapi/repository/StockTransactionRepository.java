@@ -10,4 +10,7 @@ public interface StockTransactionRepository extends JpaRepository<StockTransacti
 
     @Query("SELECT a FROM StockTransaction a WHERE a.product = ?1")
     List<StockTransaction> findTransactionByProduct(int product);
+
+    @Query("SELECT a FROM StockTransaction a WHERE a.product = ?1 AND a.transactionType=  com.challenge.backend.stockapi.enums.TransactionType.OUTCOME")
+    List<StockTransaction> findTransactionByProductOutcome(int code);
 }

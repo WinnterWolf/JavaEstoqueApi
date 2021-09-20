@@ -3,6 +3,9 @@ package com.challenge.backend.stockapi.controller;
 import com.challenge.backend.stockapi.dto.request.StockTransactionDTO;
 import com.challenge.backend.stockapi.dto.response.MessageResponseDTO;
 import com.challenge.backend.stockapi.dto.request.ProductDTO;
+import com.challenge.backend.stockapi.entity.Product;
+import com.challenge.backend.stockapi.entity.ProductQuantity;
+import com.challenge.backend.stockapi.enums.ProductType;
 import com.challenge.backend.stockapi.exceptions.NotEnoughInventoryException;
 import com.challenge.backend.stockapi.exceptions.ProductNotFoundException;
 import com.challenge.backend.stockapi.exceptions.TransactionNotFoundException;
@@ -36,6 +39,11 @@ public class StockController {
     @RequestMapping(path="/product", method = RequestMethod.GET)
     public List<ProductDTO> listAllProducts(){
         return stockService.listAllProducts();
+    }
+
+    @RequestMapping(path="/product/type/{type}", method = RequestMethod.GET)
+    public List<ProductQuantity> listAllProductsByType(@PathVariable ProductType type){
+        return stockService.listAllProductsByType(type);
     }
 
     @RequestMapping(path="/transaction", method = RequestMethod.GET)

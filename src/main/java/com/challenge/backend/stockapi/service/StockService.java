@@ -77,15 +77,15 @@ public class StockService {
     public List<ProductQuantity> listAllProductsByType(ProductType type) {
         List<Product> typedList = productRepository.listProductsByType(type);
         List<ProductQuantity> productQuantityList = new ArrayList<>();
-        for (Product p: typedList) {
-           ProductQuantity productQuantity = new ProductQuantity();
-           productQuantity.setProduct(p);
-           int stockOutcome = 0;
-           List<StockTransaction> stockTransactions = stockTransactionRepository.findTransactionsByProductOutcome(p.getCode());
-            for (StockTransaction transactions: stockTransactions) {
-                stockOutcome+=transactions.getAmount();
+        for (Product p : typedList) {
+            ProductQuantity productQuantity = new ProductQuantity();
+            productQuantity.setProduct(p);
+            int stockOutcome = 0;
+            List<StockTransaction> stockTransactions = stockTransactionRepository.findTransactionsByProductOutcome(p.getCode());
+            for (StockTransaction transactions : stockTransactions) {
+                stockOutcome += transactions.getAmount();
             }
-           productQuantity.setStockOutcome(stockOutcome);
+            productQuantity.setStockOutcome(stockOutcome);
             productQuantityList.add(productQuantity);
         }
 
@@ -110,7 +110,7 @@ public class StockService {
         int totalStockOutcome = 0;
 
         List<StockTransaction> transactions = stockTransactionRepository.findTransactionsByProductOutcome(product.getCode());
-        for (StockTransaction t: transactions) {
+        for (StockTransaction t : transactions) {
             BigDecimal transactionQuantity = BigDecimal.valueOf(t.getAmount());
             t.getValue().divide(transactionQuantity);
             BigDecimal transactionProfit = new BigDecimal(String.valueOf(t.getValue().divide(transactionQuantity)));
@@ -135,7 +135,7 @@ public class StockService {
         Product product = verifyIfProductExistsById(id);
 
         List<StockTransaction> allTransactions = stockTransactionRepository.findTransactionsByProduct(product.getCode());
-        if(!(allTransactions.isEmpty())){
+        if (!(allTransactions.isEmpty())) {
             for (StockTransaction transaction : allTransactions) {
                 stockTransactionRepository.deleteById(transaction.getId());
             }
@@ -154,15 +154,15 @@ public class StockService {
 
         Product oldProduct = verifyIfProductExistsById(id);
         String message = "Updated Product with ID ";
-        if(oldProduct.getCode() != productDTO.getCode()){
+        if (oldProduct.getCode() != productDTO.getCode()) {
             List<StockTransaction> transactions = stockTransactionRepository.findTransactionsByProduct(oldProduct.getCode());
             int transactionsUpdated = 0;
-            for (StockTransaction t: transactions) {
+            for (StockTransaction t : transactions) {
                 t.setProduct(productDTO.getCode());
                 stockTransactionRepository.save(t);
                 transactionsUpdated++;
             }
-            message = "Updated " +transactionsUpdated+ " transactions and the Product with ID ";
+            message = "Updated " + transactionsUpdated + " transactions and the Product with ID ";
         }
         Product productToUpdate = productMapper.toModel(productDTO);
         Product updatedProduct = productRepository.save(productToUpdate);
@@ -176,12 +176,12 @@ public class StockService {
         Product newProduct = productRepository.findProductByCode(stockTransactionDTO.getProduct())
                 .orElseThrow(() -> new ProductNotFoundException(" Product not found with code ", (long) stockTransactionDTO.getProduct()));
 
-        if(oldTransaction.getTransactionType() == TransactionType.INCOME){
+        if (oldTransaction.getTransactionType() == TransactionType.INCOME) {
             newProduct.setStockAmount(newProduct.getStockAmount() - oldTransaction.getAmount());
-        } else{
+        } else {
             newProduct.setStockAmount(newProduct.getStockAmount() + oldTransaction.getAmount());
         }
-        
+
 
         stockTransactionDTO.setId(oldTransaction.getId());
         validateTransaction(stockTransactionDTO, newProduct);
@@ -202,24 +202,24 @@ public class StockService {
 
     private Product verifyIfProductExistsById(long id) throws ProductNotFoundException {
         return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID ",id));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID ", id));
     }
 
     private StockTransaction verifyIfTransactionExists(long id) throws TransactionNotFoundException {
         return stockTransactionRepository.findById(id)
-                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with ID ",id));
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with ID ", id));
     }
 
     private void validateTransaction(StockTransactionDTO stockTransactionDTO, Product product) throws NotEnoughInventoryException {
-        
-        if(stockTransactionDTO.getTransactionType() == TransactionType.INCOME){
+
+        if (stockTransactionDTO.getTransactionType() == TransactionType.INCOME) {
             product.setStockAmount(product.getStockAmount() + stockTransactionDTO.getAmount());
             productRepository.save(product);
-        } else{
-            if(stockTransactionDTO.getAmount() <= product.getStockAmount()){
+        } else {
+            if (stockTransactionDTO.getAmount() <= product.getStockAmount()) {
                 product.setStockAmount(product.getStockAmount() - stockTransactionDTO.getAmount());
                 productRepository.save(product);
-            } else{
+            } else {
                 throw new NotEnoughInventoryException(product.getId());
             }
         }
